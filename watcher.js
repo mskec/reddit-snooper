@@ -54,6 +54,13 @@ module.exports = function (snooper_options) {
                 if (!err) {
                     try {
                         body = JSON.parse(body_json)
+
+                        if (res.statusCode >= 400 && res.statusCode < 600) {
+                            err = Object.assign({}, {
+                                statusCode: res.statusCode,
+                                statusMessage: res.statusMessage,
+                            }, body);
+                        }
                     } catch (_err) {
                         err = _err
                     }
@@ -63,6 +70,7 @@ module.exports = function (snooper_options) {
                     return this._get_items(start_page, after_name, posts_needed, until_name, items, retries-1, cb_first_item, cb)
                 } else if (err) {
                     cb(err)
+                    return;
                 }
 
                 let children = body.data.children
